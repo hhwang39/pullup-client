@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { postReservations } from '../actions';
 import { Field, reduxForm } from 'redux-form';
-
+import {Checkbox, FormGroup} from 'react-bootstrap';
 class SpotSchedule extends Component {
 
     clickReservation(id) {
@@ -46,47 +46,65 @@ class SpotSchedule extends Component {
         })
     }
 
-    renderCheck() {
-        return _.map(this.props.reservations, reservation => {
-            return (
-                <div key={reservation.id}>
-                    <input type='checkbox' value={reservation.id}/>
-                </div>
-            );
-        })
-    }
+    // renderCheck() {
+    //     return ( 
+    //         <FormGroup className="table-check-form-group">
+    //         {
+    //             _.map(this.props.reservations, reservation => {
+    //                 return (
+    //                     <Checkbox key={reservation.id} 
+    //                               disabled={reservation.reserved} 
+    //                               name={`${reservation.id}-${this.getTime(reservation.id)}`}>{reservation.reserved ? "reserved" : "vacant"}</Checkbox>   
+    //                 );
+    //             })
+    //         }
+    //         </FormGroup>
+    //     );
+    // }
 
     renderField(field) {
+        console.log(field);
         return (
-            <div className='form-group'>
-                <input className='form-control' type='checkbox' {...field.input} />
-            </div>
+            <Checkbox {...field.input}>{field.reserved ? "reserved" : "vacant"}</Checkbox>
+            // <input className='form-control' type='checkbox' {...field.input} />
         );
     }
 
     renderFields() {
-        return _.map(this.props.reservations, reservation => {
-            return (
-                <Field
-                    key={reservation.id}
-                    type='checkbox'
-                    name={`${reservation.id}-${this.getTime(reservation.id)}`}
-                    component={this.renderField} />
-            );
-        })
+        return (
+            <FormGroup className="table-check-form-group">
+                {
+                    _.map(this.props.reservations, reservation => {
+                        return (
+                            
+                            <Field
+                                key={reservation.id}
+                                type='checkbox'
+                                name={`${reservation.id}-${this.getTime(reservation.id)}`}
+                                reserved={reservation.reserved}
+                                component={this.renderField} />
+                            
+                        );
+                    })
+                }
+            </FormGroup>
+        )
     }
 
     onSubmit(values) {
+        console.log("Submitted");
+        console.log("values", values);
         const date = new Date();
         const time = _.map(values, (value, key) => {
             return key.split('-')[0];
         })
         const data = {
             time: time[0],
-            date: `${date.getMonth()+1}-${date.getDate()}-${date.getFullYear()}`,
+            date: `${date.getMonth() + 1}-${date.getDate()}-${date.getFullYear()}`,
             SUUID: this.props.activeSpot,
             UUID :  this.props.config.headers.UUID
         }
+        console.log("data", data);
         this.props.postReservations(data, this.props.config);
     }
     
@@ -103,14 +121,10 @@ class SpotSchedule extends Component {
                         <tr>
                             <th>Time</th>
                             <th>Reserved</th>
-                            <th>Check</th>
                         </tr>
                         <tr>
                             <td>
                                 {this.renderTable()}
-                            </td>
-                            <td>
-                                {this.renderAvail()}
                             </td>
                             <td>
                                 {this.renderFields()}

@@ -1,3 +1,11 @@
+.table-check-form-group > .checkbox {
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+.myReservation > .table {
+    width: 50%;
+}
+
 /*-------------- Overall --------------*/
 .appContainer {
     display: flex;
