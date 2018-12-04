@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { postReservations } from '../actions';
 import { Field, reduxForm } from 'redux-form';
 import {Checkbox, FormGroup} from 'react-bootstrap';
+import { withRouter } from 'react-router-dom';
 class SpotSchedule extends Component {
 
     clickReservation(id) {
@@ -46,27 +47,10 @@ class SpotSchedule extends Component {
         })
     }
 
-    // renderCheck() {
-    //     return ( 
-    //         <FormGroup className="table-check-form-group">
-    //         {
-    //             _.map(this.props.reservations, reservation => {
-    //                 return (
-    //                     <Checkbox key={reservation.id} 
-    //                               disabled={reservation.reserved} 
-    //                               name={`${reservation.id}-${this.getTime(reservation.id)}`}>{reservation.reserved ? "reserved" : "vacant"}</Checkbox>   
-    //                 );
-    //             })
-    //         }
-    //         </FormGroup>
-    //     );
-    // }
-
     renderField(field) {
-        console.log(field);
+        console.log("reserved ? ", field.reserved);
         return (
-            <Checkbox {...field.input}>{field.reserved ? "reserved" : "vacant"}</Checkbox>
-            // <input className='form-control' type='checkbox' {...field.input} />
+            <Checkbox {...field.input} disabled={field.reserved}>{field.reserved ? "reserved" : "vacant"}</Checkbox>
         );
     }
 
@@ -75,10 +59,13 @@ class SpotSchedule extends Component {
             <FormGroup className="table-check-form-group">
                 {
                     _.map(this.props.reservations, reservation => {
+                        // console.log(reservation.id, reservation);
+                        // console.log("key", reservation.id + Date.now());
+                        
                         return (
                             
                             <Field
-                                key={reservation.id}
+                                key={reservation.id + Date.now()}
                                 type='checkbox'
                                 name={`${reservation.id}-${this.getTime(reservation.id)}`}
                                 reserved={reservation.reserved}
@@ -92,7 +79,7 @@ class SpotSchedule extends Component {
     }
 
     onSubmit(values) {
-        console.log("Submitted");
+        // values.preventDefault();
         console.log("values", values);
         const date = new Date();
         const time = _.map(values, (value, key) => {
@@ -104,8 +91,11 @@ class SpotSchedule extends Component {
             SUUID: this.props.activeSpot,
             UUID :  this.props.config.headers.UUID
         }
-        console.log("data", data);
+        // console.log("data", data);
+        console.log("props", this.props.config);
         this.props.postReservations(data, this.props.config);
+        alert("success");
+        this.props.history.push('/user');
     }
     
     render() {
@@ -142,8 +132,8 @@ function mapStateToProps({ reservations, activeSpot, config})  {
     return { reservations, activeSpot, config };
 }
 
-export default reduxForm({
+export default withRouter(reduxForm({
     form: 'ReservationPage'
 })(
-    connect(mapStateToProps,{ postReservations })(SpotSchedule)
+    connect(mapStateToProps,{ postReservations })(SpotSchedule))
 );
