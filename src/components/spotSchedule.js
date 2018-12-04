@@ -48,7 +48,6 @@ class SpotSchedule extends Component {
     }
 
     renderField(field) {
-        console.log("reserved ? ", field.reserved);
         return (
             <Checkbox {...field.input} disabled={field.reserved}>{field.reserved ? "reserved" : "vacant"}</Checkbox>
         );
@@ -59,8 +58,6 @@ class SpotSchedule extends Component {
             <FormGroup className="table-check-form-group">
                 {
                     _.map(this.props.reservations, reservation => {
-                        // console.log(reservation.id, reservation);
-                        // console.log("key", reservation.id + Date.now());
                         
                         return (
                             
@@ -79,8 +76,6 @@ class SpotSchedule extends Component {
     }
 
     onSubmit(values) {
-        // values.preventDefault();
-        console.log("values", values);
         const date = new Date();
         const time = _.map(values, (value, key) => {
             return key.split('-')[0];
@@ -91,8 +86,6 @@ class SpotSchedule extends Component {
             SUUID: this.props.activeSpot,
             UUID :  this.props.config.headers.UUID
         }
-        // console.log("data", data);
-        console.log("props", this.props.config);
         this.props.postReservations(data, this.props.config);
         alert("success");
         this.props.history.push('/user');
